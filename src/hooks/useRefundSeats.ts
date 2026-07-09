@@ -25,7 +25,6 @@ export function useRefundSeats() {
     contracts: [
       { address: c.seatToken,        abi: SeatTokenAbi,        functionName: 'balanceOf', args: [address ?? '0x0000000000000000000000000000000000000000'] },
       { address: c.bondingTranche,   abi: BondingTrancheAbi,   functionName: 'refundPrice' },
-      { address: c.bondingTranche,   abi: BondingTrancheAbi,   functionName: 'currentSeatPrice' },
       { address: c.principalManager, abi: PrincipalManagerAbi, functionName: 'totalManagedAssets' },
       { address: c.seatToken,        abi: SeatTokenAbi,        functionName: 'totalSupply' },
     ],
@@ -43,9 +42,8 @@ export function useRefundSeats() {
 
   const seatBalance      = staticReads?.[0]?.result as bigint | undefined
   const refundPrice      = staticReads?.[1]?.result as bigint | undefined
-  const currentSeatPrice = staticReads?.[2]?.result as bigint | undefined
-  const totalManaged     = staticReads?.[3]?.result as bigint | undefined
-  const totalSupply      = staticReads?.[4]?.result as bigint | undefined
+  const totalManaged     = staticReads?.[2]?.result as bigint | undefined
+  const totalSupply      = staticReads?.[3]?.result as bigint | undefined
   const refundAmount     = quoteRefundResult as bigint | undefined
 
   // Mirrors the contract check: managedAssets >= totalSupply * refundPrice
@@ -89,8 +87,8 @@ export function useRefundSeats() {
 
   return {
     seats, setSeats,
-    seatBalance, refundAmount, refundPrice, currentSeatPrice,
-    isSolvent, totalManaged, totalSupply,
+    seatBalance, refundAmount, refundPrice,
+    isSolvent,
     asset,
     txHash,
     step, txLoading, errorMsg,

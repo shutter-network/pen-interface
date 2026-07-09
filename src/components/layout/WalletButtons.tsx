@@ -19,7 +19,7 @@ export function WalletButtons() {
                   <button
                     onClick={openConnectModal}
                     type="button"
-                    className="px-3 py-1.5 rounded-lg text-sm font-semibold bg-moss-600 hover:bg-moss-700 active:bg-moss-800 text-white transition-colors"
+                    className="px-3 py-1.5 rounded-lg text-sm font-semibold bg-moss-500 hover:bg-moss-600 active:bg-moss-700 text-bone-950 transition-colors"
                   >
                     Connect wallet
                   </button>
@@ -43,7 +43,7 @@ export function WalletButtons() {
                   <button
                     onClick={openChainModal}
                     type="button"
-                    className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-sm font-medium border border-bone-200 dark:border-bone-800 bg-bone-50 dark:bg-bone-900 hover:bg-bone-100 dark:hover:bg-bone-800 text-bone-700 dark:text-bone-200 transition-colors"
+                    className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-sm font-medium border border-bone-200 bg-bone-50 hover:bg-bone-100 text-bone-800 transition-colors"
                     aria-label="Switch network"
                   >
                     {chain.hasIcon && chain.iconUrl && (
@@ -60,9 +60,9 @@ export function WalletButtons() {
                   <button
                     onClick={openAccountModal}
                     type="button"
-                    className="flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-sm font-medium border border-bone-200 dark:border-bone-800 bg-bone-50 dark:bg-bone-900 hover:bg-bone-100 dark:hover:bg-bone-800 text-bone-700 dark:text-bone-200 transition-colors"
+                    className="flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-sm font-medium border border-bone-200 bg-bone-50 hover:bg-bone-100 text-bone-800 transition-colors"
                   >
-                    <span className="w-2 h-2 rounded-full bg-moss-500 dark:bg-moss-400" aria-hidden />
+                    <span className="w-2 h-2 rounded-full bg-moss-400" aria-hidden />
                     <span className="tabular-nums">{account.displayName}</span>
                   </button>
                 </>

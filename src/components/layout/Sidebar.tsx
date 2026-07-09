@@ -1,14 +1,9 @@
 import { NavLink } from 'react-router-dom'
-import shutterLogo from '../../assets/shutter.png'
-import { useAccount, useChainId } from 'wagmi'
-import { useReadContracts } from 'wagmi'
-import { SeatTokenAbi } from '../../abis/SeatToken'
-import { getContracts } from '../../config/contracts'
-import { formatSeats } from '../../lib/format'
+import shutterLogo from '../../assets/shutter-signet.svg'
 
 const NAV = [
   { to: '/',      label: 'Overview',  icon: '◎' },
-  { to: '/seats', label: 'My Seats',  icon: '◈' },
+  { to: '/seats', label: 'SEATs',     icon: '◈' },
 ]
 
 interface SidebarProps {
@@ -26,54 +21,29 @@ function CloseIcon() {
 }
 
 export function Sidebar({ open, onClose }: SidebarProps) {
-  const { address } = useAccount()
-  const chainId = useChainId()
-  const c = getContracts(chainId)
-
-  const { data } = useReadContracts({
-    contracts: [
-      { address: c.seatToken, abi: SeatTokenAbi, functionName: 'balanceOf', args: [address ?? '0x0000000000000000000000000000000000000000'] },
-      { address: c.seatToken, abi: SeatTokenAbi, functionName: 'totalSupply' },
-    ],
-    query: { enabled: !!address },
-  })
-
-  const balance     = data?.[0]?.result as bigint | undefined
-  const totalSupply = data?.[1]?.result as bigint | undefined
-
   return (
     <aside
-      className={`fixed top-0 left-0 h-full w-[220px] flex flex-col border-r border-bone-200 dark:border-bone-800 bg-bone-50 dark:bg-bone-950 z-40 transform transition-transform duration-200 ease-out md:translate-x-0 ${
+      className={`fixed top-0 left-0 h-full w-[220px] flex flex-col bg-white text-bone-900 z-40 transform transition-transform duration-200 ease-out md:translate-x-0 ${
         open ? 'translate-x-0' : '-translate-x-full'
       }`}
     >
-      {/* Space header */}
-      <div className="p-5 border-b border-bone-200 dark:border-bone-800">
-        <div className="flex items-center gap-3 mb-3">
-          <div className="w-10 h-10 rounded-xl overflow-hidden flex items-center justify-center bg-bone-50 dark:bg-bone-900">
-            <img src={shutterLogo} alt="Shutter" className="w-full h-full object-contain" />
-          </div>
-          <div className="flex-1 min-w-0">
-            <div className="font-semibold text-sm text-bone-900 dark:text-white leading-tight">Shutter PEN</div>
-            <div className="text-xs text-bone-500 dark:text-bone-400">Endowment Network</div>
-          </div>
-          <button
-            onClick={onClose}
-            className="md:hidden w-8 h-8 -mr-1 flex items-center justify-center rounded-lg text-bone-500 dark:text-bone-400 hover:bg-bone-100 dark:hover:bg-bone-900 transition-colors"
-            aria-label="Close menu"
-          >
-            <CloseIcon />
-          </button>
+      {/* Brand strip — matches header height + shadow so it reads as one bar */}
+      <div className="h-16 flex items-center justify-between px-4 bg-brand-600 shadow-lg">
+        <div className="flex items-center gap-2.5">
+          <img src={shutterLogo} alt="" className="w-8 h-8 object-contain" />
+          <span className="text-white font-semibold text-lg leading-none tracking-tight">Shutter PEN</span>
         </div>
-        {totalSupply !== undefined && (
-          <div className="text-xs text-bone-500 dark:text-bone-400">
-            {formatSeats(totalSupply)} seat{totalSupply !== 1n ? 's' : ''} sold
-          </div>
-        )}
+        <button
+          onClick={onClose}
+          className="md:hidden w-8 h-8 -mr-1 flex items-center justify-center rounded-lg text-white/90 hover:bg-white/10 transition-colors"
+          aria-label="Close menu"
+        >
+          <CloseIcon />
+        </button>
       </div>
 
-      {/* Nav */}
-      <nav className="flex-1 p-3 space-y-0.5">
+      {/* Nav — white portion below the strip */}
+      <nav className="flex-1 p-3 space-y-0.5 border-r border-bone-200">
         {NAV.map(({ to, label, icon }) => (
           <NavLink
             key={to}
@@ -83,8 +53,8 @@ export function Sidebar({ open, onClose }: SidebarProps) {
             className={({ isActive }) =>
               `flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
                 isActive
-                  ? 'bg-moss-50 dark:bg-moss-950 text-moss-600 dark:text-moss-400'
-                  : 'text-bone-600 dark:text-bone-400 hover:bg-bone-100 dark:hover:bg-bone-900 hover:text-bone-900 dark:hover:text-white'
+                  ? 'bg-brand-50 text-brand-700'
+                  : 'text-bone-600 hover:bg-bone-50 hover:text-bone-950'
               }`
             }
           >
@@ -93,19 +63,6 @@ export function Sidebar({ open, onClose }: SidebarProps) {
           </NavLink>
         ))}
       </nav>
-
-      {/* Member summary */}
-      {address && balance !== undefined && (
-        <div className="p-4 border-t border-bone-200 dark:border-bone-800">
-          <div className="text-xs text-bone-400 dark:text-bone-500 mb-1">Your seats</div>
-          <div className="text-xl font-bold text-bone-900 dark:text-white tabular-nums">{formatSeats(balance)}</div>
-          {balance === 0n && (
-            <NavLink to="/seats" onClick={onClose} className="mt-2 block text-xs text-moss-500 hover:text-moss-600 dark:hover:text-moss-400">
-              Buy seats →
-            </NavLink>
-          )}
-        </div>
-      )}
     </aside>
   )
 }

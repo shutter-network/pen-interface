@@ -1,7 +1,6 @@
 /** @type {import('tailwindcss').Config} */
 export default {
   content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
-  darkMode: 'class',
   theme: {
     extend: {
       fontFamily: {
@@ -9,35 +8,48 @@ export default {
         mono: ['"SF Mono"', '"Fira Code"', 'ui-monospace', 'monospace'],
       },
       colors: {
-        // Warm neutral scale — light end is bone/paper, dark end shifts into
-        // forest-tinted near-black so the same scale carries both light and
-        // dark surfaces.
+        // Neutral scale — 50 is near-white (body), 950 is Shutter black.
         bone: {
-          50:  '#faf7f1',
-          100: '#f4f1eb',
-          200: '#e5ddd0',
-          300: '#d0c5b1',
-          400: '#9c9585',
-          500: '#6f6b5e',
-          600: '#4d4d43',
-          700: '#333831',
-          800: '#24302a',
-          900: '#16201a',
-          950: '#0f1512',
+          50:  '#f5f7f8',
+          100: '#e8edef',
+          200: '#cbd6dc',
+          300: '#9fb2bd',
+          400: '#6d8493',
+          500: '#4a6273',
+          600: '#2f4655',
+          700: '#1e3140',
+          800: '#0f202c',
+          900: '#071620',
+          950: '#051016',
         },
-        // Accent — mint at the light end, deep forest at the dark end.
+        // Shutter yellow (--color--yellow #fde12d).
         moss: {
-          50:  '#eef4f0',
-          100: '#d7e5db',
-          200: '#b5cebb',
-          300: '#8bb096',
-          400: '#7db089',
-          500: '#56916a',
-          600: '#2f5d3f',
-          700: '#264c34',
-          800: '#1f3d2a',
-          900: '#17301f',
-          950: '#0f2016',
+          50:  '#fffce6',
+          100: '#fff7b3',
+          200: '#ffee66',
+          300: '#ffe640',
+          400: '#ffe12d',
+          500: '#fde12d',
+          600: '#d9c020',
+          700: '#a89210',
+          800: '#74650a',
+          900: '#4a4106',
+          950: '#1a1701',
+        },
+        // Shutter blue (--color--blue #0044a4) — used for the sidebar / brand
+        // surfaces on shutter.network.
+        brand: {
+          50:  '#e6eeff',
+          100: '#c2d5ff',
+          200: '#8fb2ff',
+          300: '#5c8fff',
+          400: '#296cff',
+          500: '#0057db',
+          600: '#0044a4',
+          700: '#003580',
+          800: '#00265c',
+          900: '#001a3d',
+          950: '#000d1f',
         },
       },
     },

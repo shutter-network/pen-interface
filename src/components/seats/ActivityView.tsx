@@ -12,8 +12,8 @@ export function ActivityView({ onGoToBuy }: Props) {
 
   if (!address) {
     return (
-      <div className="text-center py-10 text-bone-400 dark:text-bone-500">
-        Connect your wallet to see your seat activity.
+      <div className="text-center py-10 text-bone-500">
+        Connect your wallet to see your SEAT activity.
       </div>
     )
   }
@@ -21,8 +21,8 @@ export function ActivityView({ onGoToBuy }: Props) {
   if (a.isLoading) {
     return (
       <div className="space-y-4">
-        <div className="h-6 w-40 rounded bg-bone-200 dark:bg-bone-800 animate-pulse" />
-        <div className="h-24 rounded bg-bone-200 dark:bg-bone-800 animate-pulse" />
+        <div className="h-6 w-40 rounded bg-bone-100 animate-pulse" />
+        <div className="h-24 rounded bg-bone-100 animate-pulse" />
       </div>
     )
   }
@@ -30,16 +30,16 @@ export function ActivityView({ onGoToBuy }: Props) {
   if (a.status === 'no-seats') {
     return (
       <div className="text-center py-10">
-        <div className="text-base font-semibold text-bone-900 dark:text-white mb-1">You don't hold any seats yet</div>
-        <div className="text-sm text-bone-500 dark:text-bone-400 mb-4">
-          Buy seats to join the endowment. Your activity tracker starts on mint.
+        <div className="text-base font-semibold text-bone-950 mb-1">You don't hold any SEATs yet</div>
+        <div className="text-sm text-bone-500 mb-4">
+          Buy SEATs to join the endowment. Your activity tracker starts on mint.
         </div>
         {onGoToBuy && (
           <button
             onClick={onGoToBuy}
-            className="inline-block px-4 py-2 rounded-lg bg-moss-600 hover:bg-moss-700 text-white text-sm font-semibold transition-colors"
+            className="inline-block px-4 py-2 rounded-lg bg-moss-500 hover:bg-moss-600 text-bone-950 text-sm font-semibold transition-colors"
           >
-            Buy seats
+            Buy SEATs
           </button>
         )}
       </div>
@@ -51,91 +51,75 @@ export function ActivityView({ onGoToBuy }: Props) {
   return (
     <div className="space-y-5">
       <StatusCard a={a} />
-      <ActivityExplainer onGoToBuy={onGoToBuy} />
+      <ReclaimingNote />
+      <ActivityExplainer />
     </div>
   )
 }
 
 function StatusCard({ a }: { a: ReturnType<typeof useSeatActivity> }) {
-  const { status, balance, lastActivityAt, inactivityPeriod, secondsRemaining, progressPct } = a
+  const { status, balance, lastActivityAt, secondsRemaining } = a
 
   const tone =
     status === 'reclaimable' ? 'danger' :
     status === 'warning'     ? 'warn'   : 'ok'
 
   const border =
-    tone === 'danger' ? 'border-red-200 dark:border-red-800'
-    : tone === 'warn' ? 'border-amber-200 dark:border-amber-800'
-    :                   'border-bone-200 dark:border-bone-800'
+    tone === 'danger' ? 'border-red-200'
+    : tone === 'warn' ? 'border-amber-200'
+    :                   'border-bone-200'
 
   const bg =
-    tone === 'danger' ? 'bg-red-50 dark:bg-red-950/30'
-    : tone === 'warn' ? 'bg-amber-50 dark:bg-amber-950/20'
-    :                   'bg-bone-50 dark:bg-bone-950/40'
+    tone === 'danger' ? 'bg-red-50'
+    : tone === 'warn' ? 'bg-amber-50'
+    :                   'bg-white'
 
-  const barFill =
-    tone === 'danger' ? 'bg-red-500'
-    : tone === 'warn' ? 'bg-amber-500'
-    :                   'bg-moss-500'
-
-  const headline =
-    status === 'reclaimable' ? 'At risk of reclaim'
-    : status === 'warning'   ? 'Inactivity window closing'
+  const statusLabel =
+    status === 'reclaimable' ? 'Reclaimable'
+    : status === 'warning'   ? 'Warning'
     :                          'Active'
 
-  const headlineTone =
-    tone === 'danger' ? 'text-red-700 dark:text-red-400'
-    : tone === 'warn' ? 'text-amber-700 dark:text-amber-400'
-    :                   'text-moss-700 dark:text-moss-400'
+  const statusTone =
+    tone === 'danger' ? 'text-red-700'
+    : tone === 'warn' ? 'text-amber-700'
+    :                   'text-brand-700'
 
   return (
     <div className={`rounded-xl border ${border} ${bg} p-5 space-y-4`}>
       <div className="flex items-start justify-between gap-4">
         <div>
-          <div className={`text-xs font-semibold uppercase tracking-wider ${headlineTone}`}>{headline}</div>
-          <div className="text-lg font-semibold text-bone-900 dark:text-white mt-1">
-            {balance !== undefined && `${formatSeats(balance)} seat${balance !== 1n ? 's' : ''}`}
+          <div className="text-xs font-semibold uppercase tracking-wider text-bone-500">
+            Status: <span className={statusTone}>{statusLabel}</span>
+          </div>
+          <div className="text-lg font-semibold text-bone-950 mt-1">
+            {balance !== undefined && `${formatSeats(balance)} SEAT${balance !== 1n ? 's' : ''}`}
           </div>
         </div>
         <div className="text-right">
           {status === 'reclaimable' ? (
             <>
-              <div className="text-2xl font-bold text-red-600 dark:text-red-400 tabular-nums">Now</div>
-              <div className="text-xs text-bone-500 dark:text-bone-400">reclaim eligible</div>
+              <div className="text-2xl font-bold text-red-700 tabular-nums">Now</div>
+              <div className="text-xs text-bone-500">reclaimable</div>
             </>
           ) : secondsRemaining !== undefined ? (
             <>
-              <div className="text-2xl font-bold text-bone-900 dark:text-white tabular-nums">{formatDuration(secondsRemaining)}</div>
-              <div className="text-xs text-bone-500 dark:text-bone-400">until reclaim eligible</div>
+              <div className="text-2xl font-bold text-bone-950 tabular-nums">{formatDuration(secondsRemaining)}</div>
+              <div className="text-xs text-bone-500">Until inactive</div>
             </>
           ) : null}
         </div>
       </div>
 
-      {progressPct !== undefined && (
+      <div className="grid grid-cols-2 gap-4 pt-2 border-t border-bone-200">
         <div>
-          <div className="h-2 rounded-full bg-bone-200 dark:bg-bone-800 overflow-hidden">
-            <div className={`h-full ${barFill} transition-all`} style={{ width: `${progressPct}%` }} />
-          </div>
-          <div className="flex justify-between text-xs text-bone-500 dark:text-bone-400 mt-1.5 tabular-nums">
-            <span>{progressPct.toFixed(0)}% of window elapsed</span>
-            {inactivityPeriod !== undefined && (
-              <span>window: {formatDuration(inactivityPeriod)}</span>
-            )}
-          </div>
-        </div>
-      )}
-
-      <div className="grid grid-cols-2 gap-4 pt-2 border-t border-bone-200 dark:border-bone-800">
-        <div>
-          <div className="text-xs text-bone-500 dark:text-bone-400 mb-0.5">Last activity</div>
-          <div className="text-sm font-medium text-bone-900 dark:text-white">
+          <div className="text-xs text-bone-500 mb-0.5">Last activity</div>
+          <div className="text-sm font-medium text-bone-950">
             {lastActivityAt !== undefined && lastActivityAt > 0n ? formatUnixDate(lastActivityAt) : 'Never recorded'}
           </div>
         </div>
         <div>
-          <div className="text-xs text-bone-500 dark:text-bone-400 mb-0.5">Reclaim eligible</div>
-          <div className="text-sm font-medium text-bone-900 dark:text-white">
+          <div className="text-xs text-bone-500 mb-0.5">Reclaimable</div>
+          <div className="text-sm font-medium text-bone-950">
             {a.reclaimAt !== undefined && a.reclaimAt > 0n ? formatUnixDate(a.reclaimAt) : '—'}
           </div>
         </div>
@@ -144,36 +128,37 @@ function StatusCard({ a }: { a: ReturnType<typeof useSeatActivity> }) {
   )
 }
 
-function ActivityExplainer({ onGoToBuy }: { onGoToBuy?: () => void }) {
+function ReclaimingNote() {
   return (
-    <div className="rounded-xl border border-bone-200 dark:border-bone-800 bg-bone-50 dark:bg-bone-900/60 p-5 space-y-3">
+    <div className="rounded-xl border border-bone-200 bg-bone-50/60 p-5">
+      <div className="text-xs font-semibold uppercase tracking-wider text-bone-500 mb-1.5">
+        Reclaiming
+      </div>
+      <div className="text-sm text-bone-800">
+        If your SEATs are inactive, Shutter PEN can reclaim your SEATs. You will not receive a refund and your SEATs will be burnt.
+      </div>
+    </div>
+  )
+}
+
+function ActivityExplainer() {
+  return (
+    <div className="rounded-xl border border-bone-200 bg-bone-50/60 p-5 space-y-3">
       <div>
-        <div className="text-xs font-semibold uppercase tracking-wider text-bone-500 dark:text-bone-400">How to stay active</div>
-        <div className="text-sm text-bone-700 dark:text-bone-200 mt-1">
-          Any of these refreshes your activity timestamp on-chain:
+        <div className="text-xs font-semibold uppercase tracking-wider text-bone-500">How to stay active</div>
+        <div className="text-sm text-bone-800 mt-1">
+          Any of actions refreshes your activity timestamp onchain.
         </div>
       </div>
 
-      <ul className="space-y-2.5 text-sm">
+      <ul className="space-y-2 text-sm">
         <li className="flex items-start gap-3">
           <span className="w-1.5 h-1.5 rounded-full bg-moss-500 mt-2 flex-shrink-0" />
-          <div>
-            <div className="font-medium text-bone-900 dark:text-white">Vote on a governance proposal</div>
-            <div className="text-bone-500 dark:text-bone-400 text-xs mt-0.5">
-              Casting a ranked-choice ballot on any open proposal refreshes activity automatically.
-            </div>
-          </div>
+          <div className="font-medium text-bone-950">Vote on Shutter PEN onchain proposal</div>
         </li>
         <li className="flex items-start gap-3">
           <span className="w-1.5 h-1.5 rounded-full bg-moss-500 mt-2 flex-shrink-0" />
-          <div>
-            <div className="font-medium text-bone-900 dark:text-white">Buy additional seats</div>
-            <div className="text-bone-500 dark:text-bone-400 text-xs mt-0.5">
-              Every mint resets your activity clock.{onGoToBuy && (
-                <> <button onClick={onGoToBuy} className="text-moss-600 dark:text-moss-400 hover:underline">Buy seats →</button></>
-              )}
-            </div>
-          </div>
+          <div className="font-medium text-bone-950">Buy additional SEATs</div>
         </li>
       </ul>
     </div>

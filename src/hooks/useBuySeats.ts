@@ -4,8 +4,6 @@ import { useQueryClient, keepPreviousData } from '@tanstack/react-query'
 import { getContracts } from '../config/contracts'
 import { BondingTrancheAbi } from '../abis/BondingTranche'
 import { ERC20Abi } from '../abis/ERC20'
-import { withSlippage } from '../lib/format'
-import { PURCHASE_SLIPPAGE_BPS as BPS } from '../config/constants'
 import { usePaymentAsset } from './usePaymentAsset'
 
 export type BuyStep = 'idle' | 'quoting' | 'needs-approve' | 'approving' | 'ready' | 'purchasing' | 'success' | 'error'
@@ -66,7 +64,8 @@ export function useBuySeats() {
 
   const allowance = staticReads?.[0]?.result as bigint | undefined
   const balance   = staticReads?.[1]?.result as bigint | undefined
-  const maxCost   = quotedCost ? withSlippage(quotedCost, BPS) : undefined
+  // Price is fixed per tranche — pay exactly the quoted cost, no slippage buffer.
+  const maxCost   = quotedCost
   const quoteFailed   = quoteStatus === 'error'
   const quotePending  = quoteIsFetching || quoteStatus === 'pending'
   const insufficientBalance = balance !== undefined && maxCost !== undefined && balance < maxCost
@@ -131,7 +130,7 @@ export function useBuySeats() {
 
   return {
     quantity, setQuantity,
-    quotedCost, maxCost, balance, allowance,
+    quotedCost, balance,
     quoteFailed, quotePending, insufficientBalance,
     asset,
     step,

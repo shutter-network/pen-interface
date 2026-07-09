@@ -19,15 +19,6 @@ export function formatSeats(value: bigint): string {
   return Number(value).toLocaleString('en-US')
 }
 
-export function shortenAddress(addr: string): string {
-  return `${addr.slice(0, 6)}…${addr.slice(-4)}`
-}
-
-// Apply 1% slippage buffer: cost + 1%
-export function withSlippage(cost: bigint, bps = 100n): bigint {
-  return cost + (cost * bps) / 10_000n
-}
-
 // Format a unix-seconds timestamp as an absolute date, e.g. "Jan 3, 2025".
 export function formatUnixDate(unixSec: bigint): string {
   return new Date(Number(unixSec) * 1000).toLocaleDateString('en-US', {

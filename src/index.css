@@ -15,14 +15,10 @@
     margin: 0;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    @apply bg-bone-100 text-bone-900 font-sans;
+    @apply bg-white text-bone-900 font-sans;
   }
 
   #root {
     min-height: 100vh;
   }
-}
-
-.dark body {
-  @apply bg-bone-950 text-bone-100;
 }

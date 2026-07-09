@@ -18,23 +18,23 @@ export function Seats() {
     <div className="flex flex-col items-center">
       <div className="w-full max-w-md space-y-6">
         <div>
-          <h1 className="text-2xl font-bold text-bone-900 dark:text-white">My Seats</h1>
-          <p className="text-sm text-bone-500 dark:text-bone-400 mt-0.5">
+          <h1 className="text-2xl font-bold text-bone-950">My SEATs</h1>
+          <p className="text-sm text-bone-500 mt-0.5">
             Your activity, purchases, and refunds
           </p>
         </div>
 
         <div>
           {/* Tabs */}
-          <div className="flex gap-1 p-1 bg-bone-100 dark:bg-bone-900 rounded-xl mb-6">
+          <div className="flex gap-1 p-1 bg-bone-50 rounded-xl mb-6">
             {TABS.map(({ key, label }) => (
               <button
                 key={key}
                 onClick={() => setTab(key)}
                 className={`flex-1 py-2 px-4 rounded-lg text-sm font-semibold transition-colors ${
                   tab === key
-                    ? 'bg-bone-50 dark:bg-bone-800 text-bone-900 dark:text-white shadow-sm'
-                    : 'text-bone-500 dark:text-bone-400 hover:text-bone-700 dark:hover:text-bone-300'
+                    ? 'bg-bone-100 text-bone-950 shadow-sm'
+                    : 'text-bone-500 hover:text-bone-700'
                 }`}
               >
                 {label}
@@ -43,7 +43,7 @@ export function Seats() {
           </div>
 
           {/* Panel */}
-          <div className="rounded-2xl border border-bone-200 dark:border-bone-800 bg-bone-50 dark:bg-bone-900 p-6">
+          <div className="rounded-2xl border border-bone-200 bg-bone-50 p-6">
             {tab === 'activity' && <ActivityView onGoToBuy={() => setTab('buy')} />}
             {tab === 'buy'      && <BuyForm />}
             {tab === 'refund'   && <RefundForm />}

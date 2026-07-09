@@ -8,7 +8,7 @@ export function useDashboard() {
   const chainId = useChainId()
   const c = getContracts(chainId)
 
-  const { data, isLoading, error, refetch } = useReadContracts({
+  const { data, isLoading } = useReadContracts({
     contracts: [
       { address: c.seatToken,        abi: SeatTokenAbi,        functionName: 'totalSupply' },
       { address: c.seatToken,        abi: SeatTokenAbi,        functionName: 'supplyCap' },
@@ -31,8 +31,6 @@ export function useDashboard() {
 
   return {
     isLoading,
-    error,
-    refetch,
     totalSupply:        totalSupply?.result as bigint | undefined,
     supplyCap:          supplyCap?.result as bigint | undefined,
     currentSeatPrice:   currentSeatPrice?.result as bigint | undefined,

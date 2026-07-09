@@ -5,13 +5,14 @@ interface Props {
   totalSupply: bigint | undefined
   trancheCount: bigint | undefined
   assetDecimals?: number
+  assetSymbol?: string
 }
 
-export function TrancheProgress({ totalSupply, trancheCount, assetDecimals = 6 }: Props) {
+export function TrancheProgress({ totalSupply, trancheCount, assetDecimals = 6, assetSymbol = '' }: Props) {
   const { tranches, isLoading } = useTranches(trancheCount)
 
   if (isLoading || tranches.length === 0) {
-    return <div className="h-20 rounded-xl bg-bone-100 dark:bg-bone-900 animate-pulse" />
+    return <div className="h-20 rounded-xl bg-bone-50 animate-pulse" />
   }
 
   const cap = tranches[tranches.length - 1]?.upperBound ?? 0n
@@ -25,16 +26,16 @@ export function TrancheProgress({ totalSupply, trancheCount, assetDecimals = 6 }
   }
 
   return (
-    <div className="rounded-xl border border-bone-200 dark:border-bone-800 bg-bone-50 dark:bg-bone-900 p-4">
+    <div className="rounded-xl border border-bone-200 bg-bone-50 p-4">
       <div className="flex items-center justify-between mb-3">
-        <span className="text-xs font-medium text-bone-500 dark:text-bone-400 uppercase tracking-wide">Tranche Progress</span>
-        <span className="text-xs text-bone-400 dark:text-bone-500">
-          {formatSeats(sold)} / {formatSeats(cap)} seats
+        <span className="text-xs font-medium text-bone-500 uppercase tracking-wide">Progress</span>
+        <span className="text-xs text-bone-500">
+          {formatSeats(sold)} / {formatSeats(cap)} SEATs
         </span>
       </div>
 
       {/* Segmented bar */}
-      <div className="flex gap-0.5 h-2.5 rounded-full overflow-hidden mb-3">
+      <div className="flex gap-0.5 h-2.5 rounded-full overflow-hidden mb-4">
         {tranches.map((t, i) => {
           const start = i === 0 ? 0n : tranches[i - 1].upperBound
           const width = Number(((t.upperBound - start) * 1000n) / cap) / 10
@@ -45,7 +46,7 @@ export function TrancheProgress({ totalSupply, trancheCount, assetDecimals = 6 }
           return (
             <div
               key={i}
-              className="relative rounded-sm overflow-hidden bg-bone-200 dark:bg-bone-700"
+              className="relative rounded-sm overflow-hidden bg-bone-200"
               style={{ width: `${width}%` }}
             >
               {filled && <div className="absolute inset-0 bg-moss-500" />}
@@ -57,15 +58,39 @@ export function TrancheProgress({ totalSupply, trancheCount, assetDecimals = 6 }
         })}
       </div>
 
-      {/* Tranche labels */}
-      <div className="flex gap-2 flex-wrap">
-        {tranches.map((t, i) => (
-          <div key={i} className={`flex items-center gap-1.5 text-xs ${i === currentIdx ? 'text-moss-600 dark:text-moss-400 font-semibold' : 'text-bone-400 dark:text-bone-500'}`}>
-            <span className={`w-2 h-2 rounded-full ${i < currentIdx ? 'bg-moss-500' : i === currentIdx ? 'bg-moss-400' : 'bg-bone-300 dark:bg-bone-600'}`} />
-            T{i + 1} · {formatAsset(t.pricePerSeat, assetDecimals, '')}
-            {i === currentIdx && <span className="text-[10px] bg-moss-100 dark:bg-moss-900/50 text-moss-600 dark:text-moss-400 px-1 rounded">current</span>}
-          </div>
-        ))}
+      {/* Per-tranche breakdown */}
+      <div className="grid grid-cols-[auto_1fr_auto_auto] gap-x-3 gap-y-1.5 text-xs">
+        <div className="text-bone-500 uppercase tracking-wide font-medium">Tranche</div>
+        <div />
+        <div className="text-bone-500 uppercase tracking-wide font-medium text-right">SEATs</div>
+        <div className="text-bone-500 uppercase tracking-wide font-medium text-right">Price / SEAT</div>
+
+        {tranches.map((t, i) => {
+          const start = i === 0 ? 0n : tranches[i - 1].upperBound
+          const seatsInTranche = t.upperBound - start
+          const isCurrent = i === currentIdx
+          const isDone = sold >= t.upperBound
+          const dotClass = isDone ? 'bg-moss-500' : isCurrent ? 'bg-moss-400' : 'bg-bone-300'
+          const rowClass = isCurrent
+            ? 'text-bone-950 font-semibold'
+            : 'text-bone-500'
+
+          return (
+            <div key={i} className={`contents ${rowClass}`}>
+              <div className="flex items-center gap-1.5">
+                <span className={`w-2 h-2 rounded-full ${dotClass}`} />
+                T{i + 1}
+              </div>
+              <div>
+                {isCurrent && (
+                  <span className="text-[10px] bg-moss-100 text-moss-800 px-1.5 py-0.5 rounded">current</span>
+                )}
+              </div>
+              <div className="text-right tabular-nums">{formatSeats(seatsInTranche)}</div>
+              <div className="text-right tabular-nums">{formatAsset(t.pricePerSeat, assetDecimals, assetSymbol)}</div>
+            </div>
+          )
+        })}
       </div>
     </div>
   )
