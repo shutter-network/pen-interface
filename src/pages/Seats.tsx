@@ -18,7 +18,7 @@ export function Seats() {
     <div className="flex flex-col items-center">
       <div className="w-full max-w-md space-y-6">
         <div>
-          <h1 className="text-2xl font-bold text-bone-950">My SEATs</h1>
+          <h1 className="text-2xl font-bold text-bone-950">SEATs</h1>
           <p className="text-sm text-bone-500 mt-0.5">
             Your activity, purchases, and refunds
           </p>

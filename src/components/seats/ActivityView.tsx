@@ -75,23 +75,27 @@ function StatusCard({ a }: { a: ReturnType<typeof useSeatActivity> }) {
     :                   'bg-white'
 
   const statusLabel =
-    status === 'reclaimable' ? 'Reclaimable'
-    : status === 'warning'   ? 'Warning'
+    status === 'reclaimable' ? 'Inactive'
     :                          'Active'
 
   const statusTone =
-    tone === 'danger' ? 'text-red-700'
-    : tone === 'warn' ? 'text-amber-700'
-    :                   'text-brand-700'
+    tone === 'danger' ? 'text-red-600'
+    : tone === 'warn' ? 'text-amber-600'
+    :                   'text-brand-600'
 
   return (
     <div className={`rounded-xl border ${border} ${bg} p-5 space-y-4`}>
       <div className="flex items-start justify-between gap-4">
         <div>
-          <div className="text-xs font-semibold uppercase tracking-wider text-bone-500">
-            Status: <span className={statusTone}>{statusLabel}</span>
+          <div className="flex items-baseline gap-2">
+            <span className="text-xs font-semibold uppercase tracking-wider text-bone-500">
+              Status
+            </span>
+            <span className={`text-2xl font-bold ${statusTone}`}>
+              {statusLabel}
+            </span>
           </div>
-          <div className="text-lg font-semibold text-bone-950 mt-1">
+          <div className="text-sm font-medium text-bone-800 mt-2">
             {balance !== undefined && `${formatSeats(balance)} SEAT${balance !== 1n ? 's' : ''}`}
           </div>
         </div>
