@@ -53,6 +53,46 @@ npm run lint           # oxlint (fast, no config needed)
 
 ---
 
+## Deploying to IPFS
+
+The frontend is a fully static bundle after `npm run build`, so it can be hosted on IPFS without any backend. The build is already configured for it.
+### Build
+
+```bash
+npm run build
+npx serve dist         # sanity-check the bundle locally before pinning
+```
+
+Every path in `dist/index.html` should be relative (`./assets/...`). If you add a `<link>` or `<img>` with an absolute path (`/foo.png`), it will 404 on IPFS gateways.
+
+### Pin the bundle
+
+Pick one:
+
+| Service | Notes |
+|---|---|
+| **Fleek** | Connect the repo, set build command `npm run build` and publish dir `dist`. Auto-pins on every push, gives a CID + `*.on-fleek.app` URL, and can update ENS `contenthash` automatically. |
+| **web3.storage / Storacha** | `npm i -g @web3-storage/w3cli && w3 login && w3 up dist` returns a CID. Filecoin-backed. |
+| **Pinata** | Drag `dist/` into the dashboard or use their API. |
+| **4EVERLAND** | Similar to Fleek, also pins to Arweave. |
+| **Local `ipfs` daemon** | `ipfs add -r dist && ipfs pin add <CID>`. Fine for testing; not durable unless the node stays up. |
+
+### Give it a stable URL
+
+The CID changes on every deploy. To avoid handing out fresh CIDs each release, point a name at it:
+
+- **ENS + IPFS** (Web3-native): set the `contenthash` record on `yourname.eth` to the CID. Users load it via `yourname.eth.limo`, `yourname.eth.link`, Brave, or MetaMask. Update the contenthash per deploy (small gas cost; free-ish on L2 resolvers).
+- **DNSLink**: add a TXT record `_dnslink.yourdomain.com` → `dnslink=/ipfs/<CID>`. Users hit `yourdomain.com` via any gateway.
+
+### Gotchas specific to this app
+
+- **WalletConnect**: `VITE_WALLETCONNECT_PROJECT_ID` must be a project whose allowlist in the WalletConnect Cloud dashboard includes every domain you'll serve from: `*.eth.limo`, `*.eth.link`, `*.ipfs.dweb.link`, `*.on-fleek.app`, your ENS name, and any DNSLink domain. Otherwise the modal errors out on the deployed site.
+- **RPC endpoints**: `VITE_RPC_SEPOLIA` / `VITE_RPC_MAINNET` ship in the bundle and are publicly readable. Use rate-keyed Alchemy/Infura URLs, not a private key or unmetered endpoint.
+- **Env vars are baked at build time**: to change any `VITE_*` value you must rebuild and re-pin. Plan on one CID per environment (staging vs. production).
+- **Test on a real gateway**: `npx serve dist` misses gateway-specific quirks (CSP, subdomain vs. path routing). After pinning, load your CID via `https://<cid>.ipfs.dweb.link` and click through every route before updating ENS.
+
+---
+
 ## Environment Variables
 
 | Variable | Required | Description |
@@ -199,7 +239,7 @@ src/
 WagmiProvider (wagmiConfig)
   └── QueryClientProvider (TanStack Query)
         └── RainbowKitProvider
-              └── BrowserRouter
+              └── HashRouter
                     └── App
 ```
 
