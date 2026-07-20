@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { isAddress } from 'viem'
 import { useAccount, useChainId } from 'wagmi'
 import { useBuySeats } from '../../hooks/useBuySeats'
 import { useDashboard } from '../../hooks/useDashboard'
@@ -46,6 +47,7 @@ export function BuyForm() {
   const explorerUrl = getExplorerUrl(chainId)
   const {
     quantity, setQuantity,
+    recipient, setRecipient,
     quotedCost, balance,
     quoteFailed, quotePending, insufficientBalance,
     asset,
@@ -63,6 +65,24 @@ export function BuyForm() {
   const [inputStr, setInputStr] = useState(quantity.toString())
   // Keep display in sync when the hook resets (e.g. after success)
   useEffect(() => { setInputStr(quantity.toString()) }, [quantity])
+
+  // Optional recipient — buy SEATs on someone else's behalf.
+  const [forOther, setForOther] = useState(false)
+  const [recipientStr, setRecipientStr] = useState('')
+  // Keep the form field in sync when the hook resets after a purchase.
+  useEffect(() => { if (recipient === undefined) { setForOther(false); setRecipientStr('') } }, [recipient])
+
+  const recipientValid = isAddress(recipientStr.trim())
+  const recipientEmpty = recipientStr.trim().length === 0
+  const recipientInvalid = forOther && !recipientEmpty && !recipientValid
+  // Block buying-for-other until a valid address is entered.
+  const recipientBlocked = forOther && !recipientValid
+
+  // Push a validated recipient into the hook (or clear it) so `purchase` mints
+  // to the right address. Only valid addresses reach the hook.
+  useEffect(() => {
+    setRecipient(forOther && recipientValid ? (recipientStr.trim() as `0x${string}`) : undefined)
+  }, [forOther, recipientValid, recipientStr, setRecipient])
 
   const isLoading = approveLoading || purchaseLoading
 
@@ -84,7 +104,11 @@ export function BuyForm() {
       <div className="text-center py-10">
         <div className="text-3xl mb-3">✓</div>
         <div className="text-lg font-semibold text-bone-950 mb-1">Purchase complete</div>
-        <div className="text-sm text-bone-500 mb-4">{formatSeats(quantity)} SEAT{quantity !== 1n ? 's' : ''} added to your wallet.</div>
+        <div className="text-sm text-bone-500 mb-4">
+          {recipient
+            ? <>{formatSeats(quantity)} SEAT{quantity !== 1n ? 's' : ''} sent to <span className="font-mono text-bone-700">{recipient.slice(0, 6)}…{recipient.slice(-4)}</span>.</>
+            : <>{formatSeats(quantity)} SEAT{quantity !== 1n ? 's' : ''} added to your wallet.</>}
+        </div>
         {explorerUrl && purchaseTxHash && (
           <a
             href={`${explorerUrl}/tx/${purchaseTxHash}`}
@@ -136,6 +160,42 @@ export function BuyForm() {
           }}
           className="w-full text-center text-xl font-bold rounded-lg border border-bone-300 bg-bone-50 text-bone-950 py-2.5 focus:outline-none focus:ring-2 focus:ring-moss-500 tabular-nums"
         />
+      </div>
+
+      {/* Recipient — buy on someone else's behalf */}
+      <div>
+        <label className="flex items-center gap-2 text-sm text-bone-700 cursor-pointer select-none">
+          <input
+            type="checkbox"
+            checked={forOther}
+            onChange={e => setForOther(e.target.checked)}
+            className="h-4 w-4 rounded border-bone-300 text-moss-500 focus:ring-moss-500"
+          />
+          Buy for someone else
+        </label>
+        {forOther && (
+          <div className="mt-2">
+            <input
+              type="text"
+              spellCheck={false}
+              autoComplete="off"
+              value={recipientStr}
+              onChange={e => setRecipientStr(e.target.value)}
+              placeholder="Recipient address (0x…)"
+              className={`w-full text-sm font-mono rounded-lg border bg-bone-50 text-bone-950 px-3 py-2.5 focus:outline-none focus:ring-2 ${
+                recipientInvalid
+                  ? 'border-red-300 focus:ring-red-400'
+                  : 'border-bone-300 focus:ring-moss-500'
+              }`}
+            />
+            {recipientInvalid && (
+              <div className="mt-1 text-xs text-red-600">Enter a valid Ethereum address.</div>
+            )}
+            {recipientValid && (
+              <div className="mt-1 text-xs text-bone-500">SEATs will be minted to this address. You pay from your wallet.</div>
+            )}
+          </div>
+        )}
       </div>
 
       {/* Quote failed — not enough seats available */}
@@ -216,7 +276,7 @@ export function BuyForm() {
       {needsApprove ? (
         <button
           onClick={approve}
-          disabled={isLoading || quotePending || quoteFailed || insufficientBalance}
+          disabled={isLoading || quotePending || quoteFailed || insufficientBalance || recipientBlocked}
           className="w-full py-3 rounded-xl font-semibold text-sm bg-moss-500 hover:bg-moss-600 active:scale-[0.97] active:bg-moss-700 disabled:opacity-50 disabled:cursor-not-allowed text-bone-950 transition-all"
         >
           {step === 'approving' || approveLoading ? 'Approving…' : `Approve ${ASSET_SYMBOL}`}
@@ -224,10 +284,12 @@ export function BuyForm() {
       ) : (
         <button
           onClick={purchase}
-          disabled={isLoading || !quotedCost || quotePending || quoteFailed || insufficientBalance || step === 'idle'}
+          disabled={isLoading || !quotedCost || quotePending || quoteFailed || insufficientBalance || step === 'idle' || recipientBlocked}
           className="w-full py-3 rounded-xl font-semibold text-sm bg-moss-500 hover:bg-moss-600 active:scale-[0.97] active:bg-moss-700 disabled:opacity-50 disabled:cursor-not-allowed text-bone-950 transition-all"
         >
-          {step === 'purchasing' || purchaseLoading ? 'Purchasing…' : `Buy ${formatSeats(quantity)} SEAT${quantity !== 1n ? 's' : ''}`}
+          {step === 'purchasing' || purchaseLoading
+            ? 'Purchasing…'
+            : `Buy ${formatSeats(quantity)} SEAT${quantity !== 1n ? 's' : ''}${forOther && recipientValid ? ' for them' : ''}`}
         </button>
       )}
     </div>

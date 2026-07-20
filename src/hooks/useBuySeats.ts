@@ -18,6 +18,10 @@ export function useBuySeats() {
   const [quantity, setQuantity] = useState(1n)
   const [step, setStep] = useState<BuyStep>('idle')
   const [errorMsg, setErrorMsg] = useState<string | null>(null)
+  // Recipient of the SEATs. `undefined` means "buy for myself" (the connected
+  // wallet). Payment (approve/allowance/balance) always comes from the buyer;
+  // only the on-chain `recipient` of the mint differs.
+  const [recipient, setRecipient] = useState<`0x${string}` | undefined>(undefined)
 
   // Static reads — balance and allowance don't depend on quantity.
   // Kept separate so they never refetch (and flicker) when quantity changes.
@@ -117,7 +121,7 @@ export function useBuySeats() {
         address: c.bondingTranche,
         abi: BondingTrancheAbi,
         functionName: 'purchase',
-        args: [address, quantity, maxCost],
+        args: [recipient ?? address, quantity, maxCost],
       })
     } catch (e: unknown) {
       setErrorMsg(parseContractError(e))
@@ -125,11 +129,12 @@ export function useBuySeats() {
     }
   }
 
-  function reset() { setQuantity(1n); setStep('idle'); setErrorMsg(null) }
+  function reset() { setQuantity(1n); setStep('idle'); setErrorMsg(null); setRecipient(undefined) }
   function clearError() { setErrorMsg(null) }
 
   return {
     quantity, setQuantity,
+    recipient, setRecipient,
     quotedCost, balance,
     quoteFailed, quotePending, insufficientBalance,
     asset,
