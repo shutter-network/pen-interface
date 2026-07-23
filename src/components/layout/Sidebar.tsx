@@ -4,6 +4,7 @@ import shutterLogo from '../../assets/shutter-signet.svg'
 const NAV = [
   { to: '/',      label: 'Overview',  icon: '◎' },
   { to: '/seats', label: 'SEATs',     icon: '◈' },
+  { to: '/links', label: 'Links',     icon: '⧉' },
 ]
 
 interface SidebarProps {

@@ -4,6 +4,8 @@ export type ContractAddresses = {
   seatToken:        `0x${string}`
   bondingTranche:   `0x${string}`
   principalManager: `0x${string}`
+  // The governing Safe multisig — optional, only surfaced for reference (Links tab).
+  safe?:            `0x${string}`
 }
 
 function addr(value: string | undefined, name: string): `0x${string}` {
@@ -12,11 +14,19 @@ function addr(value: string | undefined, name: string): `0x${string}` {
   return value as `0x${string}`
 }
 
+// Like addr() but returns undefined instead of throwing when the var is unset —
+// for addresses that are informational rather than required for the app to run.
+function optionalAddr(value: string | undefined): `0x${string}` | undefined {
+  if (!value || !value.startsWith('0x')) return undefined
+  return value as `0x${string}`
+}
+
 function buildAddresses(prefix: string): ContractAddresses {
   return {
     seatToken:        addr(import.meta.env[`VITE_${prefix}_SEAT_TOKEN`],        `VITE_${prefix}_SEAT_TOKEN`),
     bondingTranche:   addr(import.meta.env[`VITE_${prefix}_BONDING_TRANCHE`],   `VITE_${prefix}_BONDING_TRANCHE`),
     principalManager: addr(import.meta.env[`VITE_${prefix}_PRINCIPAL_MANAGER`], `VITE_${prefix}_PRINCIPAL_MANAGER`),
+    safe:             optionalAddr(import.meta.env[`VITE_${prefix}_SAFE`]),
   }
 }
 
