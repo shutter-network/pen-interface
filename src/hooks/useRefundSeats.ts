@@ -28,7 +28,9 @@ export function useRefundSeats() {
       { address: c.principalManager, abi: PrincipalManagerAbi, functionName: 'totalManagedAssets' },
       { address: c.seatToken,        abi: SeatTokenAbi,        functionName: 'totalSupply' },
     ],
-    query: { enabled: !!address },
+    // Read-only — runs without a wallet so the refund price / solvency banner
+    // render before connecting. balanceOf falls back to the zero address (→ 0).
+    query: { enabled: !!c.seatToken },
   })
 
   // Dynamic read — reruns on every seats change; keepPreviousData prevents clearing while loading
@@ -37,7 +39,7 @@ export function useRefundSeats() {
     abi: BondingTrancheAbi,
     functionName: 'quoteRefund',
     args: [seats],
-    query: { enabled: !!address && seats > 0n, placeholderData: keepPreviousData },
+    query: { enabled: seats > 0n, placeholderData: keepPreviousData },
   })
 
   const seatBalance      = staticReads?.[0]?.result as bigint | undefined

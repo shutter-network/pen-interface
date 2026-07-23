@@ -23,14 +23,6 @@ export function RefundForm() {
   const [inputStr, setInputStr] = useState(seats.toString())
   useEffect(() => { setInputStr(seats.toString()) }, [seats])
 
-  if (!address) {
-    return (
-      <div className="text-center py-10 text-bone-500">
-        Connect your wallet to refund SEATs.
-      </div>
-    )
-  }
-
   if (step === 'success') {
     return (
       <div className="text-center py-10">
@@ -156,13 +148,22 @@ export function RefundForm() {
       )}
 
       {/* Action */}
-      <button
-        onClick={refund}
-        disabled={!isSolvent || !confirmed || insufficientSeats || txLoading}
-        className="w-full py-3 rounded-xl font-semibold text-sm bg-red-600 hover:bg-red-700 active:scale-[0.97] active:bg-red-800 disabled:opacity-40 disabled:cursor-not-allowed text-white transition-all"
-      >
-        {txLoading ? 'Refunding…' : `Refund ${formatSeats(seats)} SEAT${seats !== 1n ? 's' : ''}`}
-      </button>
+      {!address ? (
+        <button
+          disabled
+          className="w-full py-3 rounded-xl font-semibold text-sm bg-red-600 disabled:opacity-40 disabled:cursor-not-allowed text-white transition-all"
+        >
+          Connect wallet
+        </button>
+      ) : (
+        <button
+          onClick={refund}
+          disabled={!isSolvent || !confirmed || insufficientSeats || txLoading}
+          className="w-full py-3 rounded-xl font-semibold text-sm bg-red-600 hover:bg-red-700 active:scale-[0.97] active:bg-red-800 disabled:opacity-40 disabled:cursor-not-allowed text-white transition-all"
+        >
+          {txLoading ? 'Refunding…' : `Refund ${formatSeats(seats)} SEAT${seats !== 1n ? 's' : ''}`}
+        </button>
+      )}
     </div>
   )
 }

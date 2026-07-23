@@ -91,14 +91,6 @@ export function BuyForm() {
       ? splitAcrossTranches(quantity, d.totalSupply, tranches)
       : []
 
-  if (!address) {
-    return (
-      <div className="text-center py-10 text-bone-500">
-        Connect your wallet to buy SEATs.
-      </div>
-    )
-  }
-
   if (step === 'success') {
     return (
       <div className="text-center py-10">
@@ -273,7 +265,14 @@ export function BuyForm() {
       )}
 
       {/* Action button */}
-      {needsApprove ? (
+      {!address ? (
+        <button
+          disabled
+          className="w-full py-3 rounded-xl font-semibold text-sm bg-moss-500 disabled:opacity-50 disabled:cursor-not-allowed text-bone-950 transition-all"
+        >
+          Connect wallet
+        </button>
+      ) : needsApprove ? (
         <button
           onClick={approve}
           disabled={isLoading || quotePending || quoteFailed || insufficientBalance || recipientBlocked}

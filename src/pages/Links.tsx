@@ -3,10 +3,10 @@ import { useChainId } from 'wagmi'
 import { getContracts, isSupportedChain } from '../config/contracts'
 import { getExplorerUrl } from '../config/constants'
 
-// External resources. Forum & Voting are placeholders until the real URLs land.
+// External resources.
 const RESOURCES: { label: string; href: string; note?: string }[] = [
-  { label: 'Forum',  href: '#', note: 'Coming soon' },
-  { label: 'Voting', href: '#', note: 'Coming soon' },
+  { label: 'Forum',  href: 'http://holders.vote/h/shutterpen.eth' },
+  { label: 'Voting', href: 'https://snapshot.box/#/org/shutterpen' },
 ]
 
 function shortAddress(a: string): string {

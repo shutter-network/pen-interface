@@ -54,7 +54,9 @@ export function useBuySeats() {
     functionName: 'quotePurchase',
     args: [quantity],
     query: {
-      enabled: !!address && quantity > 0n,
+      // Read-only quote — runs even without a connected wallet so the cost
+      // breakdown is visible before connecting.
+      enabled: quantity > 0n,
       placeholderData: keepPreviousData,
       retry: (_, error) => {
         const msg = (error as { message?: string; shortMessage?: string })?.shortMessage

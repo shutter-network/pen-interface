@@ -8,8 +8,10 @@ export default function App() {
   return (
     <Routes>
       <Route element={<Layout />}>
-        <Route index element={<Dashboard />} />
+        {/* Land on SEATs by default. */}
+        <Route index element={<Navigate to="/seats" replace />} />
         <Route path="seats" element={<Seats />} />
+        <Route path="metrics" element={<Dashboard />} />
         <Route path="links" element={<Links />} />
         {/* Old /activity URLs redirect into the consolidated My Seats screen. */}
         <Route path="activity" element={<Navigate to="/seats" replace />} />

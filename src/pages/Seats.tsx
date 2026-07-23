@@ -12,7 +12,7 @@ const TABS: { key: Tab; label: string }[] = [
 ]
 
 export function Seats() {
-  const [tab, setTab] = useState<Tab>('activity')
+  const [tab, setTab] = useState<Tab>('buy')
 
   return (
     <div className="flex flex-col items-center">

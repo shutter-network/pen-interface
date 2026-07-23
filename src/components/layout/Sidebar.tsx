@@ -2,9 +2,9 @@ import { NavLink } from 'react-router-dom'
 import shutterLogo from '../../assets/shutter-signet.svg'
 
 const NAV = [
-  { to: '/',      label: 'Overview',  icon: '◎' },
-  { to: '/seats', label: 'SEATs',     icon: '◈' },
-  { to: '/links', label: 'Links',     icon: '⧉' },
+  { to: '/seats',   label: 'SEATs',   icon: '◈' },
+  { to: '/metrics', label: 'Metrics', icon: '◎' },
+  { to: '/links',   label: 'Links',   icon: '⧉' },
 ]
 
 interface SidebarProps {
@@ -49,7 +49,6 @@ export function Sidebar({ open, onClose }: SidebarProps) {
           <NavLink
             key={to}
             to={to}
-            end={to === '/'}
             onClick={onClose}
             className={({ isActive }) =>
               `flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${

@@ -24,7 +24,7 @@ export function Dashboard() {
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-bold text-bone-950">Overview</h1>
+        <h1 className="text-2xl font-bold text-bone-950">Metrics</h1>
       </div>
 
       {/* Seat stats */}
